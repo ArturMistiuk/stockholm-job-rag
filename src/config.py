@@ -1,0 +1,9 @@
+from pathlib import Path
+
+ROOT = Path(__file__).parent.parent
+DATA_DIR = ROOT / "data"
+
+JOBS_PATH = DATA_DIR / "linkedin_jobs_500.json"
+EMBEDDINGS_PATH = DATA_DIR / "embeddings.npy"
+
+MODEL_NAME = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
