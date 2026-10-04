@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
 from sentence_transformers import SentenceTransformer
-from config import MODEL_NAME, JOBS_PATH, EMBEDDINGS_PATH
+from config import MODEL_EMB_NAME, JOBS_PATH, EMBEDDINGS_PATH
 
-model = SentenceTransformer(MODEL_NAME)
+model = SentenceTransformer(MODEL_EMB_NAME)
 embedings = np.load(EMBEDDINGS_PATH)
 
 jobs_df = pd.read_json(JOBS_PATH)
