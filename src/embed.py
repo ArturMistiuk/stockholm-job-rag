@@ -12,8 +12,8 @@ if __name__ == "__main__":
 
     sentences = jobs_df["text"].to_list()
 
-    embedings = model.encode(sentences, normalize_embeddings=True, show_progress_bar=True)
+    embeddings = model.encode(sentences, normalize_embeddings=True, show_progress_bar=True)
 
-    assert len(jobs_df) == len(embedings), "jobs and embeddings are out of sync"
+    assert len(jobs_df) == len(embeddings), "jobs and embeddings are out of sync"
 
-    np.save(EMBEDDINGS_PATH, embedings)
+    np.save(EMBEDDINGS_PATH, embeddings)
