@@ -4,11 +4,11 @@ Ask questions about Stockholm job ads in plain language and get answers based on
 
 Example: *"Which data analyst jobs in Stockholm ask for dbt and don't require Swedish?"*
 
-**Status:** semantic search over job ads works. The LLM answer step is next.
+**Status:** semantic search and a first LLM answer step (Claude Haiku 4.5) work. Evaluation is next.
 
 ## Why this project
 
-I already collect job ads in my [Stockholm Job Market Analyzer](LINK) pipeline. This project adds a RAG layer on top of that data.
+I already collect job ads in my [Stockholm Job Market Analyzer](https://stockholm-job-market.fly.dev/) pipeline. This project adds a RAG layer on top of that data.
 
 The main focus is not the chatbot itself but checking how well it works: does retrieval find the right ads, and does the answer stick to what the ads actually say. Ads are a mix of Swedish and English, which makes retrieval harder and more interesting.
 
@@ -30,13 +30,17 @@ Implemented so far:
 
 - `src/embed.py` embeds `title + description` for every ad with the multilingual model `paraphrase-multilingual-MiniLM-L12-v2` and saves normalized vectors to `data/embeddings.npy`
 - `src/search.py` embeds the query and returns the top-k ads by cosine similarity
+- `src/prompt.py` builds the prompt: a system prompt that allows answering only from the given ads, plus the top-k ads (ID, title, employer, first 1000 characters of the description). IDs are the first 8 characters of the ad `id`
+- `src/rag.py` has `answer(question)`: search -> build prompt -> Claude (`claude-haiku-4-5-20251001`) -> answer text
+- `src/main.py` runs a few sample questions end to end, including one with no matching ads (should answer "No matching jobs found.")
+- `src/config.py` holds paths, model names and loads `ANTHROPIC_API_KEY` from `.env`
 - `notebooks/search_check.ipynb` runs manual checks of search results on sample queries
 
 ## Roadmap
 
 - [x] Export and clean job ads
 - [x] Embeddings and semantic search (top-k)
-- [ ] Prompt with retrieved ads, answers cite ad IDs
+- [x] Prompt with retrieved ads, answers cite ad IDs
 - [ ] First test: 10 questions, results table
 - [ ] Hybrid search (BM25 + semantic) and metadata filters (work mode, language, date)
 - [ ] Test set of 50+ questions, retrieval metrics (recall@k, MRR)
@@ -50,10 +54,18 @@ Results and comparisons will be added here as the project grows.
 
 ## Setup
 
+Requires Python 3.12+.
+
 ```bash
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\Activate.ps1
-pip install sentence-transformers pandas numpy
+pip install -r requirements.txt
+```
+
+Create `.env` in the project root (needed only for the LLM step):
+
+```
+ANTHROPIC_API_KEY=sk-ant-...
 ```
 
 ## Usage
@@ -61,6 +73,7 @@ pip install sentence-transformers pandas numpy
 ```bash
 python src/embed.py     # build data/embeddings.npy (re-run after the data changes)
 python src/search.py    # run a sample query
+python src/main.py      # answer sample questions with the LLM
 ```
 
 From Python, with `src` on the path:
@@ -68,6 +81,9 @@ From Python, with `src` on the path:
 ```python
 from search import search
 search("data analyst SQL Python", k=5)[["title", "employer", "score"]]
+
+from rag import answer
+print(answer("Which data analyst jobs ask for dbt?"))
 ```
 
 ## Author

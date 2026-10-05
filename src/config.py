@@ -13,5 +13,5 @@ MODEL_EMB_NAME = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
 
 load_dotenv(ROOT / ".env")
-ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
 MODEL_ANTHROPIC = "claude-haiku-4-5-20251001"

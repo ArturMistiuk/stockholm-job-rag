@@ -1,0 +1,5 @@
+anthropic
+numpy
+pandas
+python-dotenv
+sentence-transformers

@@ -4,6 +4,9 @@ from prompt import build_prompt, SYSTEM_PROMPT
 from config import ANTHROPIC_API_KEY, MODEL_ANTHROPIC
 
 
+if not ANTHROPIC_API_KEY:
+    raise RuntimeError("ANTHROPIC_API_KEY is not set, add it to .env")
+
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
 def answer(question):
